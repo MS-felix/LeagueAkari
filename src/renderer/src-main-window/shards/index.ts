@@ -13,6 +13,7 @@ import { GameClientRenderer } from '@renderer-shared/shards/game-client'
 import { InGameSendRenderer } from '@renderer-shared/shards/in-game-send'
 import { AkariIpcRenderer } from '@renderer-shared/shards/ipc'
 import { KeyboardShortcutsRenderer } from '@renderer-shared/shards/keyboard-shortcut'
+import { LanguageManagerRenderer } from '@renderer-shared/shards/language-manager'
 import { LeagueClientRenderer } from '@renderer-shared/shards/league-client'
 import { LeagueClientUxRenderer } from '@renderer-shared/shards/league-client-ux'
 import { LoggerRenderer } from '@renderer-shared/shards/logger'
@@ -61,6 +62,7 @@ manager.use(OngoingGameRenderer)
 manager.use(PiniaMobxUtilsRenderer)
 manager.use(RendererDebugRenderer)
 manager.use(RespawnTimerRenderer)
+manager.use(LanguageManagerRenderer)
 manager.use(RiotClientRenderer)
 manager.use(SavedPlayerRenderer)
 manager.use(SelfHostedLcuDataRenderer)

@@ -4,7 +4,7 @@ import type { AppCommonMain } from '../app-common'
 import type { AkariIpcMain } from '../ipc'
 import type { AkariLogger } from '../logger-factory'
 import type { MobxUtilsMain } from '../mobx-utils'
-import type { ClientInstallationState } from './state'
+import type { ClientInstallationSettings, ClientInstallationState } from './state'
 
 export const CLIENT_INSTALLATION_MAIN_NAMESPACE = 'client-installation-main'
 
@@ -36,4 +36,5 @@ export interface ClientInstallationMainContext {
   ipc: AkariIpcMain
   mobxUtils: MobxUtilsMain
   shared: SharedGlobalShard
+  settings: ClientInstallationSettings
 }

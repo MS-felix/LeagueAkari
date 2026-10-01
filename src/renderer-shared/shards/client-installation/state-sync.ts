@@ -7,5 +7,6 @@ import { useClientInstallationStore } from './store'
 export async function syncClientInstallationState(context: ClientInstallationRendererContext) {
   const store = useClientInstallationStore()
 
+  await context.piniaMobxUtils.sync(CLIENT_INSTALLATION_MAIN_NAMESPACE, 'settings', store.settings)
   await context.piniaMobxUtils.sync(CLIENT_INSTALLATION_MAIN_NAMESPACE, 'state', store)
 }

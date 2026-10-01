@@ -121,6 +121,20 @@ settings:
         rebuildButton: Rebuild WMI
     misc:
       title: Misc
+      clientStartup:
+        title: League Client Startup
+        enabled:
+          label: Launch League of Legends with League Akari
+          description: Starts the Riot client once when League Akari opens, unless Riot or League is already running
+      languageManager:
+        title: League Client Language
+        enabled:
+          label: Force Mainland China Simplified Chinese
+          description: Changes only the Riot product locale; region, login region, and patchline remain unchanged
+        status: Current status
+        target: 'Target locale: {{locale}}'
+        detected: 'Detected locale: {{locale}}'
+        region: 'Current region: {{region}}'
       logLevel:
         label: Log Level
         description: Set the log level of the application

@@ -1,9 +1,12 @@
 import { IAkariShardInitDispose, Shard, SharedGlobalShard } from '@shared/akari-shard'
+import { z } from 'zod'
 
 import { AppCommonMain } from '../app-common'
 import { AkariIpcMain } from '../ipc'
 import { AkariLogger, LoggerFactoryMain } from '../logger-factory'
 import { MobxUtilsMain } from '../mobx-utils'
+import { SettingFactoryMain } from '../setting-factory'
+import { SetterSettingService } from '../setting-factory/setter-setting-service'
 import { ClientInstallationLauncher } from './client-launcher'
 import {
   CLIENT_INSTALLATION_MAIN_NAMESPACE,
@@ -20,7 +23,7 @@ import { ClientInstallationDetector } from './installation-detector'
 import { ClientInstallationIpcHandlers } from './ipc-handlers'
 import { ClientInstallationJumpListController } from './jump-list-controller'
 import { LiveStreamingDetector } from './live-streaming-detector'
-import { ClientInstallationState } from './state'
+import { ClientInstallationSettings, ClientInstallationState } from './state'
 
 /**
  * 情报搜集模块
@@ -39,6 +42,7 @@ export class ClientInstallationMain implements IAkariShardInitDispose {
   static readonly LIVE_STREAMING_CLIENT_POLL_INTERVAL = CLIENT_LIVE_STREAMING_CLIENT_POLL_INTERVAL
 
   public readonly state = new ClientInstallationState()
+  public readonly settings = new ClientInstallationSettings()
 
   private readonly _logger: AkariLogger
   private readonly _context: ClientInstallationMainContext
@@ -47,6 +51,7 @@ export class ClientInstallationMain implements IAkariShardInitDispose {
   private readonly _ipcHandlers: ClientInstallationIpcHandlers
   private readonly _jumpListController: ClientInstallationJumpListController
   private readonly _liveStreamingDetector: LiveStreamingDetector
+  private readonly _settingService: SetterSettingService<ClientInstallationSettings>
 
   private _liveStreamingTimer: NodeJS.Timeout | null = null
 
@@ -55,9 +60,20 @@ export class ClientInstallationMain implements IAkariShardInitDispose {
     private readonly _appCommon: AppCommonMain,
     private readonly _ipc: AkariIpcMain,
     private readonly _mobxUtils: MobxUtilsMain,
-    private readonly _shared: SharedGlobalShard
+    private readonly _shared: SharedGlobalShard,
+    settingFactory: SettingFactoryMain
   ) {
     this._logger = _loggerFactory.create(ClientInstallationMain.id)
+    this._settingService = settingFactory.register(
+      ClientInstallationMain.id,
+      {
+        launchRiotClientOnStartup: {
+          default: this.settings.launchRiotClientOnStartup,
+          schema: z.boolean()
+        }
+      },
+      this.settings
+    )
     this._context = {
       namespace: ClientInstallationMain.id,
       state: this.state,
@@ -65,7 +81,8 @@ export class ClientInstallationMain implements IAkariShardInitDispose {
       appCommon: this._appCommon,
       ipc: this._ipc,
       mobxUtils: this._mobxUtils,
-      shared: this._shared
+      shared: this._shared,
+      settings: this.settings
     }
 
     this._installationDetector = new ClientInstallationDetector(this._context)
@@ -80,10 +97,22 @@ export class ClientInstallationMain implements IAkariShardInitDispose {
 
   async onInit() {
     this._setupState()
+    await this._settingService.applyToState()
+    this._mobxUtils.propSync(ClientInstallationMain.id, 'settings', this.settings, [
+      'launchRiotClientOnStartup'
+    ])
     this._ipcHandlers.register()
     await this._installationDetector.runPlatformDetection()
     this._jumpListController.register()
     this._liveStreamingTimer = this._liveStreamingDetector.watch()
+  }
+
+  async onFinish() {
+    await this._launcher.launchOnStartup()
+  }
+
+  addBeforeRiotLaunchHook(hook: () => Promise<void>) {
+    return this._launcher.addBeforeRiotLaunchHook(hook)
   }
 
   private _setupState() {

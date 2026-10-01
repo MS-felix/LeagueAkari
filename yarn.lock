@@ -6918,6 +6918,7 @@ __metadata:
     vue-tsc: "npm:^3.3.6"
     winston: "npm:^3.19.0"
     ws: "npm:^8.21.0"
+    yaml: "npm:^2.9.0"
     zod: "npm:^4.4.3"
   dependenciesMeta:
     league-akari-native-win32:

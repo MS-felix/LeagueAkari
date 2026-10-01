@@ -3,6 +3,7 @@ import { Dep, IAkariShardInitDispose, Shard } from '@shared/akari-shard'
 import { AkariIpcRenderer } from '../ipc'
 import { LoggerRenderer } from '../logger'
 import { PiniaMobxUtilsRenderer } from '../pinia-mobx-utils'
+import { SettingUtilsRenderer } from '../setting-utils'
 import {
   CLIENT_INSTALLATION_RENDERER_NAMESPACE,
   type ClientInstallationRendererContext
@@ -20,12 +21,14 @@ export class ClientInstallationRenderer implements IAkariShardInitDispose {
   constructor(
     @Dep(AkariIpcRenderer) ipc: AkariIpcRenderer,
     @Dep(LoggerRenderer) logger: LoggerRenderer,
-    @Dep(PiniaMobxUtilsRenderer) piniaMobxUtils: PiniaMobxUtilsRenderer
+    @Dep(PiniaMobxUtilsRenderer) piniaMobxUtils: PiniaMobxUtilsRenderer,
+    @Dep(SettingUtilsRenderer) settingUtils: SettingUtilsRenderer
   ) {
     this._context = {
       ipc,
       logger,
-      piniaMobxUtils
+      piniaMobxUtils,
+      settingUtils
     }
     this._launcherService = new ClientInstallationLauncherService(this._context)
   }
@@ -48,5 +51,13 @@ export class ClientInstallationRenderer implements IAkariShardInitDispose {
 
   launchDefaultRiotClient() {
     return this._launcherService.launchDefaultRiotClient()
+  }
+
+  setLaunchRiotClientOnStartup(enabled: boolean) {
+    return this._context.settingUtils.set(
+      'client-installation-main',
+      'launchRiotClientOnStartup',
+      enabled
+    )
   }
 }

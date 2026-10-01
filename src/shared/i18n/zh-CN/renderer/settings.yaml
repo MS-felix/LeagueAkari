@@ -121,6 +121,20 @@ settings:
         rebuildButton: 重建 WMI
     misc:
       title: 其他
+      clientStartup:
+        title: 英雄联盟客户端启动
+        enabled:
+          label: 启动 League Akari 时同步启动英雄联盟
+          description: League Akari 启动时仅启动一次 Riot 客户端；若 Riot 或英雄联盟已运行则不会重复启动
+      languageManager:
+        title: 英雄联盟语言
+        enabled:
+          label: 强制使用中国大陆简体中文
+          description: 仅修改 Riot 产品配置中的语言，不会改变区服、登录区域或 patchline
+        status: 当前状态
+        target: 当前目标语言：{{locale}}
+        detected: 当前检测语言：{{locale}}
+        region: 当前区服：{{region}}
       logLevel:
         label: 日志级别
         description: 设置应用的日志级别

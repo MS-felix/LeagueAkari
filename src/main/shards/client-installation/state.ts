@@ -1,5 +1,13 @@
 import { makeAutoObservable, observable } from 'mobx'
 
+export class ClientInstallationSettings {
+  launchRiotClientOnStartup = true
+
+  constructor() {
+    makeAutoObservable(this)
+  }
+}
+
 export class ClientInstallationState {
   /**
    * 检测到的已经安装的 LeagueClient
